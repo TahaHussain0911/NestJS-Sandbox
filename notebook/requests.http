@@ -1,0 +1,28 @@
+
+### all notes
+GET http://localhost:3001/notes
+
+
+### get single note
+GET http://localhost:3001/notes/12
+
+
+### create note
+POST http://localhost:3001/notes 
+Content-Type: application/json
+
+{
+    "notes":"first note"
+}
+
+
+### update note
+PATCH http://localhost:3001/notes/2 
+Content-Type: application/json
+
+{
+    "notes":"update note"
+}
+
+### delete note
+DELETE http://localhost:3001/notes/4

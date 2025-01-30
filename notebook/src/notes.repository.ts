@@ -50,7 +50,7 @@ export class NotesRepository {
     const noteIndex = notes.findIndex((note) => note?._id === +id);
     if (noteIndex === -1) return undefined;
     const [deletedNote] = notes.splice(noteIndex, 1);
-    await this.writeNotes({ notes, totalCount });
+    await this.writeNotes({ notes, totalCount: totalCount - 1 });
     return deletedNote;
   }
 }

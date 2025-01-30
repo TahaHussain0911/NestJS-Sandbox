@@ -31,12 +31,12 @@ export class NotesController {
 
   @Post()
   createNote(@Body() body: CreateNotesDto) {
-    return this.notesService.create(body.notes);
+    return this.notesService.create(body.note);
   }
 
   @Patch('/:id')
   async updateNote(@Param('id') id: string, @Body() body: CreateNotesDto) {
-    const note = await this.notesService.findByIdAndUpdate(id, body.notes);
+    const note = await this.notesService.findByIdAndUpdate(id, body.note);
 
     if (!note) {
       throw new NotFoundException('Note not found');

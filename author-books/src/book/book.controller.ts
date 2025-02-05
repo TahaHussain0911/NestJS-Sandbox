@@ -11,12 +11,14 @@ import {
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { Book } from './schemas/book.schema';
-import { Query as ExpressQuery } from 'express-serve-static-core';
+import { Query as QueryParams } from 'express-serve-static-core';
+import { UpdateBootDto } from './dto/update-boot.dto';
+import { ValidateMongoId } from './pipes/validate-mongo-id.pipe';
 @Controller('book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
   @Get()
-  getBooks(@Query() query: ExpressQuery): Promise<Book[]> {
+  getBooks(@Query() query: QueryParams): Promise<Book[]> {
     return this.bookService.findAll(query);
   }
 
@@ -26,17 +28,22 @@ export class BookController {
   }
 
   @Get('/:id')
-  getSingleBook(@Param('id') id: string): Promise<Book | null> {
+  getSingleBook(
+    @Param('id', ValidateMongoId) id: string,
+  ): Promise<Book | null> {
     return this.bookService.findById(id);
   }
 
   @Patch('/:id')
-  updateBook(@Param('id') id: string, @Body() book): Promise<Book | null> {
+  updateBook(
+    @Param('id', ValidateMongoId) id: string,
+    @Body() book: UpdateBootDto,
+  ): Promise<Book | null> {
     return this.bookService.updateById(id, book);
   }
 
   @Delete('/:id')
-  deleteBook(@Param() id: string) {
+  deleteBook(@Param('id', ValidateMongoId) id: string) {
     return this.bookService.deleteById(id);
   }
 }

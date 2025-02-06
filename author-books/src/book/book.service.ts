@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose';
 import { Book } from './schemas/book.schema';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { CreateBookDto } from './dto/create-book.dto';
+import { Auth } from 'src/auth/schemas/auth.schema';
 
 @Injectable()
 export class BookService {
@@ -30,8 +31,9 @@ export class BookService {
       .limit(limitNumber);
     return books;
   }
-  async create(book: Book): Promise<Book> {
-    return this.bookModel.create(book);
+  async create(book: Book, user: Auth): Promise<Book> {
+    const updatedBook = Object.assign(book, { user: user?._id });
+    return this.bookModel.create(updatedBook);
   }
   async findById(id: string): Promise<Book | null> {
     const foundBook = await this.bookModel.findById(id);

@@ -7,6 +7,8 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -14,6 +16,7 @@ import { Book } from './schemas/book.schema';
 import { Query as QueryParams } from 'express-serve-static-core';
 import { UpdateBootDto } from './dto/update-boot.dto';
 import { ValidateMongoId } from './pipes/validate-mongo-id.pipe';
+import { AuthGuard } from '@nestjs/passport';
 @Controller('book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
@@ -23,8 +26,9 @@ export class BookController {
   }
 
   @Post()
-  createBook(@Body() book: CreateBookDto): Promise<Book> {
-    return this.bookService.create(book);
+  @UseGuards(AuthGuard())
+  createBook(@Body() book: CreateBookDto, @Req() req): Promise<Book> {
+    return this.bookService.create(book, req.user);
   }
 
   @Get('/:id')

@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
 
-@Injectable()
+// <string> type in PipeTransform should be similar to the value type
+// coming through the middleware
 export class ValidateMongoId implements PipeTransform<string> {
   transform(value: string) {
     if (!isValidObjectId(value)) {

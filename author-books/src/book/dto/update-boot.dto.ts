@@ -1,4 +1,5 @@
 import {
+  IsEmpty,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -9,6 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Category } from '../schemas/book.schema';
+import { Auth } from 'src/auth/schemas/auth.schema';
 
 export class UpdateBootDto {
   @IsOptional()
@@ -34,4 +36,7 @@ export class UpdateBootDto {
   @IsOptional()
   @IsEnum(Category, { message: 'Invalid category selected' })
   category: Category;
+
+  @IsEmpty({ message: 'User id cannot be passed!' })
+  readonly user: Auth;
 }

@@ -11,7 +11,7 @@ export class AuthController {
   @Post('/signup')
   registerUser(
     @Body() body: SignupDto,
-  ): Promise<{ token: string; user: Omit<Auth, 'password'> }> {
+  ): Promise<{ token: string; user: Omit<Auth, 'password'> | null }> {
     return this.authService.registerUser(body);
   }
 

@@ -19,7 +19,7 @@ export class AuthService {
   ) {}
   async registerUser(
     payload: SignupDto,
-  ): Promise<{ token: string; user: Omit<Auth, 'password'> }> {
+  ): Promise<{ token: string; user: Omit<Auth, 'password'> | null }> {
     const { name, email, password } = payload;
     const userExists = await this.authModel.exists({ email });
     if (userExists) {
@@ -35,10 +35,10 @@ export class AuthService {
       userId: createdUser?._id,
       email,
     });
-    const { password: _, ...userWithoutPass } = createdUser?.toObject();
+    const userObject = await this.authModel.findById(createdUser?._id).lean();
     return {
       token,
-      user: userWithoutPass,
+      user: userObject,
     };
   }
   async loginUser(

@@ -8,19 +8,21 @@ import {
   Post,
   Query,
   Req,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Query as QueryParams } from 'express-serve-static-core';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
-import { Book } from './schemas/book.schema';
-import { Query as QueryParams } from 'express-serve-static-core';
 import { UpdateBootDto } from './dto/update-boot.dto';
 import { ValidateMongoId } from './pipes/validate-mongo-id.pipe';
-import { AuthGuard } from '@nestjs/passport';
+import { Book } from './schemas/book.schema';
 @Controller('book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
   @Get()
+  // @Roles( Role.Admin)
+  @UseGuards(AuthGuard())
   getBooks(@Query() query: QueryParams): Promise<Book[]> {
     return this.bookService.findAll(query);
   }
@@ -50,4 +52,6 @@ export class BookController {
   deleteBook(@Param('id', ValidateMongoId) id: string) {
     return this.bookService.deleteById(id);
   }
+
+
 }

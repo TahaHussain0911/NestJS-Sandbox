@@ -68,4 +68,7 @@ export class AuthService {
       user: userWithoutPass,
     };
   }
+  getUser(user: Auth): Auth {
+    return user;
+  }
 }

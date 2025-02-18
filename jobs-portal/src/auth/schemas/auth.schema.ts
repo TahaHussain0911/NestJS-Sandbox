@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Role } from '../enums/role.enum';
 
 @Schema({
   timestamps: true,
@@ -34,7 +35,9 @@ export class Auth extends Document {
   })
   otp?: string;
 
-  @Prop()
+  @Prop({
+    select: false,
+  })
   otpExpiresAt?: Date;
 
   @Prop({
@@ -43,9 +46,10 @@ export class Auth extends Document {
   otpVerified?: boolean;
 
   @Prop({
-    default: 'user',
+    type: [{ type: String, enum: Role }],
+    default: [Role.User],
     immutable: true,
   })
-  role: string;
+  role: Role[];
 }
 export const AuthSchema = SchemaFactory.createForClass(Auth);

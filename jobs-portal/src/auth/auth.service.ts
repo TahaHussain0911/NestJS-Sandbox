@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import mongoose from 'mongoose';
-import { Auth } from './schemas/auth.schema';
-import { InjectModel } from '@nestjs/mongoose';
-import { SignupDto } from './dtos/signup.dto';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcryptjs';
+import { InjectModel } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 import { LoginDto } from './dtos/login.dto';
+import { SignupDto } from './dtos/signup.dto';
+import { Auth } from './schemas/auth.schema';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -25,18 +25,14 @@ export class AuthService {
     if (password !== confirmPassword) {
       throw new BadRequestException('Password donot match!');
     }
-    const hashPassword = await bcrypt.hash(password, 10);
     const createdUser = await this.authModel.create({
       name,
       email,
-      password: hashPassword,
-      //   role: 'user',
+      password,
     });
     const userObject = await this.authModel.findById(createdUser._id).lean();
-    const token = this.jwtService.sign({
-      userId: userObject?._id,
-      email,
-    });
+
+    const token = this.generateToken(userObject);
     return {
       token,
       user: userObject,
@@ -47,28 +43,51 @@ export class AuthService {
     body: LoginDto,
   ): Promise<{ token: string; user: Omit<Auth, 'password'> }> {
     const { email, password } = body;
-    const user = await this.authModel
-      .findOne({ email })
-      .select('+password')
-      .lean();
+    const user = await this.authModel.findOne({ email }).select('+password');
+
     if (!user) {
       throw new BadRequestException('Invalid Credentials');
     }
-    const verifyPassword = await bcrypt.compare(password, user?.password);
+    const verifyPassword = await user.comparePassword(password);
     if (!verifyPassword) {
       throw new BadRequestException('Invalid Credentials');
     }
-    const { password: _, ...userWithoutPass } = user;
-    const token = this.jwtService.sign({
-      userId: user?._id,
-      email,
-    });
+    const userWithoutPass = user.toObject() as any;
+    delete userWithoutPass.password;
+    const token = this.generateToken(userWithoutPass);
+
     return {
       token,
       user: userWithoutPass,
     };
   }
-  getUser(user: Auth): Auth {
-    return user;
+
+  async changePassword(
+    body: ChangePasswordDto,
+    user: Auth,
+  ): Promise<{ token: string }> {
+    // const { userId } = user;
+    const { currentPassword, newPassword, confirmNewPassword } = body;
+    const verifyPassword = await user.comparePassword(currentPassword);
+    if (!verifyPassword) {
+      throw new BadRequestException('Current Password Not Correct');
+    }
+    if (newPassword !== confirmNewPassword) {
+      throw new BadRequestException('Password donot match!');
+    }
+    user.password = newPassword;
+    await user.save();
+    const token = this.generateToken(user);
+    return {
+      token,
+    };
+  }
+
+  private generateToken(user: Auth | null): string {
+    const token = this.jwtService.sign({
+      userId: user?._id,
+      email: user?.email,
+    });
+    return token;
   }
 }

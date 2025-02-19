@@ -17,11 +17,26 @@ export class JWTStrategy extends PassportStrategy(Strategy) {
     });
   }
   async validate(payload): Promise<Auth> {
-    const { userId } = payload;
-    const user = await this.authModel.findById(userId);
+    const { userId, iat, exp } = payload;
+    console.log(iat, 'iat', exp, 'exp');
+    if (exp < Date.now() / 1000) {
+      throw new UnauthorizedException('Token expired! Please login again.');
+    }
+    const user = await this.authModel
+      .findById(userId)
+      .select('+password +passwordChangedAt');
     if (!user) {
       throw new UnauthorizedException('Invalid Token. Please Login!');
     }
+    const passwordChangedInMs = new Date(
+      user?.passwordChangedAt ?? 0,
+    ).getTime();
+    if (iat < Math.floor(passwordChangedInMs / 1000)) {
+      throw new UnauthorizedException(
+        'Password has been recently changed. Please login again!',
+      );
+    }
+
     return user;
   }
 }

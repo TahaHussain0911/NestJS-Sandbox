@@ -2,9 +2,10 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
@@ -16,10 +17,9 @@ export class UploadController {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix = Date.now();
           const ext = extname(file.originalname);
-          const filename = `${file.originalname}-${uniqueSuffix}${ext}`;
+          const filename = `${file.originalname?.replace(ext, '')}-${uniqueSuffix}${ext}`;
           cb(null, filename);
         },
       }),
@@ -31,6 +31,29 @@ export class UploadController {
     return {
       message: 'File uploaded successfully',
       file: `${file.filename}`,
+    };
+  }
+
+  @Post('multiple')
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now();
+          const ext = extname(file.originalname);
+          const filename = `${file.originalname?.replace(ext, '')}-${uniqueSuffix}${ext}`;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  uploadMultipleFiles(@UploadedFiles() files: Array<Express.Multer.File>) {
+    return {
+      message: 'Files uploaded successfully',
+      files: files?.map((file) => {
+        return file.filename;
+      }),
     };
   }
 }

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invitation to Join Organization</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #333333;
+        font-size: 24px;
+      }
+      .content p {
+        font-size: 16px;
+        color: #555555;
+        line-height: 1.5;
+      }
+      .btn-container {
+        text-align: center;
+        margin: 30px 0;
+      }
+      .btn {
+        background-color: #4caf50;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 12px 25px;
+        border-radius: 5px;
+        font-weight: bold;
+        display: inline-block;
+      }
+      .footer {
+        font-size: 12px;
+        color: #999999;
+        text-align: center;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header">
+        <h1>You've Been Invited!</h1>
+      </div>
+
+      <div class="content">
+        <p>Hi,</p>
+        <p>You have been invited to an organization</p>
+        <p>Click the button below to accept the invitation and get started:</p>
+        <div class="btn-container">
+          <a href="<%= invitationLink %>" class="btn">Accept Invitation</a>
+        </div>
+        <p>
+          If you didn't expect this invitation, you can safely ignore this
+          email.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          &copy; <%= new Date().getFullYear() %> Your Company Name. All rights
+          reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -9,6 +9,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CartModule } from './modules/cart/cart.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     CategoryModule,
     ProductModule,
     OrderModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [AppService],
